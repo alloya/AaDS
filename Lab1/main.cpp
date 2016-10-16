@@ -58,6 +58,19 @@ void MoveQueue(vector<SpyData> &spyQueue)
 	//cout << spyQueue[0].name << endl;
 }
 
+int MaxAllTime(vector<SpyData> &vector)
+{
+	int maxValue = 0;
+	for (int i = 0; i < vector.size(); i++)
+	{
+		if (vector[i].allTime > maxValue)
+		{
+			maxValue = vector[i].allTime;
+		}
+	}
+	return maxValue;
+}
+
 void CalculateQueue1(vector<SpyData> &spyQueue)
 {
 	int timeMoment = 0;
@@ -86,9 +99,9 @@ bool IsHeWillStayForFullWatch(vector<SpyData> &vector, int currSpy, int currtime
 		//cout << "CheckForFullWatch = true" << endl;;
 		//DeleteSpyFromQueue(vector, currSpy, vector[currSpy].allTime);
 		//return vector[currSpy].allTime;
-		return true;
+		return false;
 	}
-	return false;
+	return true;
 }
 
 void PrintVector(vector<SpyData> vector)
@@ -133,22 +146,25 @@ void CalculateQueue(vector<SpyData> &vector)
 	{
 		for (int i = 0; i < vector.size(); i++)
 		{
-			cout << "iteration # " << i << endl;
-			cout << "curr time = " << currTime << endl;
+			//cout << "iteration # " << i << endl;
+			//cout << "curr time = " << currTime << endl;
 			//int activeTimeOfCurrSpy = vector[i].activeTime;
 			cout << "Moment " << currTime << " : " << vector.front().name << " started his watch." << endl;
 			isAnySpyHasToGoRightNow(vector, currTime);
-			if (IsHeWillStayForFullWatch(vector, i, currTime))
+			if (!IsHeWillStayForFullWatch(vector, i, currTime))
 			{
 				currTime = vector[i].allTime;
+				//DeleteSpyFromQueue(vector, i, currTime);
 			}
 			else
 			{
 				currTime += vector[i].activeTime;
+				MoveQueue(vector);
 			}
 			//currTime += activeTimeOfCurrSpy;
-			
-			MoveQueue(vector);
+			isAnySpyHasToGoRightNow(vector, currTime);
+			i = vector.size();
+			//MoveQueue(vector);
 			cout << endl;
 		}
 	}
@@ -175,7 +191,7 @@ int main()
 	}
 	
 	PrintVector(spyQueue);
-
+	int maxValue = MaxAllTime(spyQueue);
 	//MoveQueue(spyQueue);
 	//PrintVector(spyQueue);
 	//isAnySpyHasToGo(spyQueue, 5);
