@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <cstring>
 
 using namespace std;
 
@@ -13,11 +14,20 @@ struct SpyData
 	int allTime;
 };
 
-void DeleteSpyFromQueue(vector<SpyData> &spyQueue, int spyNumber, int timeMoment)
+void DeleteSpyFromQueue(vector<SpyData> &spyQueue, char *spyName, int timeMoment)
 {
+	int i = 0;
 	vector<SpyData>::iterator number = spyQueue.begin();
-	number += spyNumber;
-	cout << "Moment " << timeMoment << " : \t" << spyQueue[spyNumber].name << " left queue." << endl;
+	for (i = 0; i < spyQueue.size(); ++i)
+	{
+		if (!strcmp(spyName, spyQueue[i].name))
+		{
+			number += i;
+			break;
+		}
+	}
+	
+	cout << "Moment " << timeMoment << " : \t" << spyQueue[i].name << " left queue." << endl;
 	spyQueue.erase(number);
 }
 
@@ -27,20 +37,31 @@ void isAnySpyHasToGoRightNow(vector<SpyData> &spyQueue, int time)
 	{
 		if (time >= spyQueue[i].allTime)
 		{
-			DeleteSpyFromQueue(spyQueue, i, time);
+			DeleteSpyFromQueue(spyQueue, spyQueue[i].name, time);
 		}
 	}
 }
 
-void MoveQueue(vector<SpyData> &spyQueue)
+void MoveQueue(vector<SpyData> &spyQueue, int timeMoment)
 {
+	cout << "Moment " << timeMoment << " : \t" << spyQueue[0].name << " moved to the end of queue." << endl;
 	spyQueue.push_back(spyQueue[0]);
 	spyQueue.erase(spyQueue.begin());
+	
 }
 
-bool IsHeWillStayForFullWatch(vector<SpyData> &vector, int currSpy, int currtime)
+vector<SpyData> IsHeWillStayForFullWatch(vector<SpyData> &inputVector, int currSpy, int currtime)
 {
-	return (!(vector[currSpy].allTime < (currtime + vector[currSpy].activeTime)));
+	vector<SpyData> vecToDelete;
+	for (int i = 0; i < inputVector.size(); ++i)
+	{
+		if ((inputVector[i].allTime < (currtime + inputVector[currSpy].activeTime)))
+		{
+			vecToDelete.push_back(inputVector[i]);
+		}
+	}
+	
+	return vecToDelete;
 }
 
 void PrintVector(vector<SpyData> vector)
@@ -52,29 +73,35 @@ void PrintVector(vector<SpyData> vector)
 	}
 }
 
-void CalculateQueue(vector<SpyData> &vector)
+void CalculateQueue(vector<SpyData> &inputVector)
 {
 	int currTime = 0;
-	while (vector.size() != 1)
+	vector<SpyData> listToDelete;
+	while (inputVector.size() != 1)
 	{
-		for (size_t i = 0; i < vector.size(); i++)
+		for (size_t i = 0; i < inputVector.size(); i++)
 		{
-			cout << "Moment " << currTime << " : \t" << vector.front().name << " started his watch." << endl;
-			isAnySpyHasToGoRightNow(vector, currTime);
-			if (!IsHeWillStayForFullWatch(vector, i, currTime))
+			cout << "Moment " << currTime << " : \t" << inputVector.front().name << " started his watch." << endl;
+			isAnySpyHasToGoRightNow(inputVector, currTime);
+			listToDelete = IsHeWillStayForFullWatch(inputVector, i, currTime);
+			if (!listToDelete.empty())
 			{
-				currTime = vector[i].allTime;
+				for (int k = 0; k < listToDelete.size(); ++k)
+				{
+					currTime = listToDelete[k].allTime;
+					DeleteSpyFromQueue(inputVector, listToDelete[k].name, currTime);
+				}
 			}
 			else
 			{
-				currTime += vector[i].activeTime;
-				MoveQueue(vector);
+				currTime += inputVector[i].activeTime;
+				MoveQueue(inputVector, currTime);
 			}
-			isAnySpyHasToGoRightNow(vector, currTime);
-			i = vector.size();
+			isAnySpyHasToGoRightNow(inputVector, currTime);
+			i = inputVector.size();
 		}
 	}
-	cout << "Moment " << vector.front().allTime << " : \t" << vector.front().name << " left queue." << endl;
+	cout << "Moment " << inputVector.front().allTime << " : \t" << inputVector.front().name << " left queue." << endl;
 	return;
 }
 
