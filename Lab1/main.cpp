@@ -12,7 +12,6 @@ struct SpyData
 	char name[20];
 	int activeTime;
 	int allTime;
-	int test;
 };
 
 void DeleteSpyFromQueue(vector<SpyData> &spyQueue, char *spyName, int timeMoment)
