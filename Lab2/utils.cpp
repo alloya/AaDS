@@ -1,8 +1,30 @@
 #include "stdafx.h"
 #include "utils.h"
 
+using namespace std;
 
-int read_from_file(FILE *F, Tree **r)
+bool CheckInput(int argc)
+{
+	if (argc != 2)
+	{
+		printf("\nNumber of parameters is wrong. Usage: Lab2.exe <filename>");
+		return false;
+	}
+	return true;
+}
+
+bool OpenFile(FILE *Fin, char* fileName)
+{
+	Fin = fopen(fileName, "r");
+	if (Fin == NULL)
+	{
+		printf("\nCan not open file %s", fileName);
+		return false;
+	}
+	return true;
+}
+
+int ReadFile(FILE *F, Tree **r)
 {
 	char buf[DL];
 	int i, k, m, len;
@@ -50,56 +72,45 @@ int read_from_file(FILE *F, Tree **r)
 		t = p;      // текуща€ вершина
 	}
 	fclose(F);
+
+	printf("Ѕинарое дерево построено\n");
+	getchar();
 	return 0;
 }
 
-void back_from_bin(Tree *p)
+void FindRelations(Tree *tree)
 {
-	int i, j;
-	char st[DL];
-	if (p)
-	{
-		for (i = 0; i < p->urov; i++) st[i] = '.';
-		j = 0;
-		while (st[i++] = (p->name)[j++]);
-		printf("%s\n", st);
-		back_from_bin(p->left);
-		back_from_bin(p->right);
-	}
+	printf("¬ведите имена двух людей\n");
+	string firstName, secondName;
+	cin >> firstName;
+	cin >> secondName;
+	//GetRelatives(tree, firstName);
 }
 
-void print_right_bin(Tree *p, int level)
-{
-	if (p)
-	{
-		print_right_bin(p->left, level + 1);
-		for (int i = 0; i < level; i++)
-			printf("%c", '.');
-		printf("%s\n", p->name);
-		print_right_bin(p->right, level + 1);
-	}
-}
-
-void print_up_bin(Tree *p, int level)
-{
-	if (p)
-	{
-		print_up_bin(p->left, level + 1);
-		print_up_bin(p->right, level + 1);
-		for (int i = 0; i < level; i++)
-			printf("%c", '.');
-		printf("%s\n", p->name);
-	}
-}
-
-void print_down_bin(Tree *p, int level)
+void PrintTree(Tree *p, int level)
 {
 	if (p)
 	{
 		for (int i = 0; i < level; i++)
 			printf("%c", '.');
 		printf("%s\n", p->name);
-		print_down_bin(p->left, level + 1);
-		print_down_bin(p->right, level + 1);
+		PrintTree(p->left, level + 1);
+		PrintTree(p->right, level + 1);
 	}
+}
+
+Tree  *GetRelatives(Tree *tree, char* name)
+{
+	Tree *result = 0;
+	if (tree != 0)
+	{
+		if (strcmp(name, tree->name) == 0)
+		{
+			return tree;
+		}
+		result = GetRelatives(tree->right, name);
+		if (result == 0)
+			result = GetRelatives(tree->left, name);
+	}
+	return result;
 }

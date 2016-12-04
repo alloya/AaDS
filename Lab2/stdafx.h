@@ -12,5 +12,8 @@
 #include <tchar.h>
 
 #include <fstream>
-
+#include <stdlib.h>
+#include <string.h>
+#include <iostream>
+#include <string>
 // TODO: reference additional headers your program requires here
