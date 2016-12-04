@@ -73,33 +73,128 @@ int ReadFile(FILE *F, Tree **r)
 	}
 	fclose(F);
 
-	printf("Ѕинарое дерево построено\n");
-	getchar();
+	printf("Binary tree was built.\n");
 	return 0;
+}
+
+char *ToChar(string string)
+{
+	char *newChar = new char[DL];
+	std::strcpy(newChar, string.c_str());
+	return newChar;
 }
 
 void FindRelations(Tree *tree)
 {
-	printf("¬ведите имена двух людей\n");
+	Tree *first = 0, *second = 0;
+	cout << "Enter two different names" << endl;
 	string firstName, secondName;
 	cin >> firstName;
 	cin >> secondName;
-	//GetRelatives(tree, firstName);
+
+	first = GetChilds(tree, ToChar(firstName));
+	second = GetChilds(tree, ToChar(secondName));
+
+	GetRelations(first, second);
+
+
 }
 
-void PrintTree(Tree *p, int level)
+void GetRelations(Tree *first, Tree *second)
 {
-	if (p)
+	if (first == second)
 	{
-		for (int i = 0; i < level; i++)
-			printf("%c", '.');
-		printf("%s\n", p->name);
-		PrintTree(p->left, level + 1);
-		PrintTree(p->right, level + 1);
+		cout << "Please enter different names." << endl;
+	}
+	if ((first == 0) || (second == 0))
+	{
+		cout << "One or more name is not in the list." << endl;
+	}
+	
+
+	if (IsParent(first, second))
+	{
+		cout << first->name << " is parent of " << second->name << endl;
+	}
+	else if (IsParent(second, first))
+	{
+		cout << second->name << " is parent of " << first->name << endl;
+	}
+	else
+	{
+		Tree *parent = GetParent(first, second);
+		if (parent != 0)
+		{
+			cout << "Parent of " << first->name << " and " << second->name 
+				<< " is " << parent->name << endl;
+		}
+		else
+		{
+			cout << first->name << " and " << second->name 	<< " are not close relatives." << endl;
+		}
 	}
 }
 
-Tree  *GetRelatives(Tree *tree, char* name)
+bool IsParent(Tree *parent, Tree *child)
+{
+	if (parent->urov >= child->urov)
+	{
+		return false;
+	}
+
+	Tree *tmp = child;
+	while (tmp->urov > parent->urov)
+	{
+		tmp = tmp->fath;
+	}
+	if (tmp == parent)
+		return true;
+	return false;
+}
+
+Tree *GetParent(Tree *first, Tree *second)
+{
+	Tree *tmp1 = first;
+	Tree *tmp2 = second;
+	if (tmp1->urov != tmp2->urov)
+	{
+		while (tmp1->urov > tmp2->urov)
+		{
+			tmp1 = tmp1->fath;
+		}
+		while (tmp2->urov > tmp1->urov)
+		{
+			tmp2 = tmp2->fath;
+		}
+	}
+	while ((tmp1 != tmp2) && (tmp1 != 0))
+	{
+		tmp1 = tmp1->fath;
+		tmp2 = tmp2->fath;
+	}
+	if (tmp1 == tmp2)
+	{
+		return tmp1;
+	}
+	else return 0;
+}
+
+void PrintTree(Tree *p)
+{
+	int i, j;
+	char st[DL];
+	if (p)
+	{
+		for (i = 0; i < p->urov; i++) st[i] = '.';
+		j = 0;
+		while (st[i++] = (p->name)[j++]);
+		printf("%s\n", st);
+		PrintTree(p->left);
+		PrintTree(p->right);
+	}
+}
+
+Tree *GetChilds(Tree *tree, char* name)
 {
 	Tree *result = 0;
 	if (tree != 0)
@@ -108,9 +203,9 @@ Tree  *GetRelatives(Tree *tree, char* name)
 		{
 			return tree;
 		}
-		result = GetRelatives(tree->right, name);
+		result = GetChilds(tree->right, name);
 		if (result == 0)
-			result = GetRelatives(tree->left, name);
+			result = GetChilds(tree->left, name);
 	}
 	return result;
 }

@@ -16,5 +16,9 @@ struct Tree
 bool CheckInput(int argc);
 bool OpenFile(FILE *Fin, char* fileName);
 int ReadFile(FILE *F, Tree **r);  // чтение из файла, формирование дерева
-void PrintTree(Tree *p, int lev);  // выдача бинарного сверху вниз
+void PrintTree(Tree *p);  // выдача бинарного сверху вниз
 void FindRelations(Tree *tree);
+void GetRelations(Tree *first, Tree *second);
+bool IsParent(Tree *parent, Tree *child);
+Tree *GetChilds(Tree *tree, char* name);
+Tree *GetParent(Tree *first, Tree *second);
