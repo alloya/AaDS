@@ -77,16 +77,32 @@ int ReadFile(FILE *F, Tree **r)
 	return 0;
 }
 
+void PrintTree(Tree *p)
+{
+	int i, j;
+	char st[DL];
+	if (p)
+	{
+		for (i = 0; i < p->urov; i++) st[i] = '.';
+		j = 0;
+		while (st[i++] = (p->name)[j++]);
+		printf("%s\n", st);
+		PrintTree(p->left);
+		PrintTree(p->right);
+	}
+}
+
 char *ToChar(string string)
 {
 	char *newChar = new char[DL];
-	std::strcpy(newChar, string.c_str());
+	strcpy(newChar, string.c_str());
 	return newChar;
 }
 
 void FindRelations(Tree *tree)
 {
-	Tree *first = 0, *second = 0;
+	Tree *first = 0;
+	Tree *second = 0;
 	cout << "Enter two different names" << endl;
 	string firstName, secondName;
 	cin >> firstName;
@@ -96,8 +112,6 @@ void FindRelations(Tree *tree)
 	second = GetChilds(tree, ToChar(secondName));
 
 	GetRelations(first, second);
-
-
 }
 
 void GetRelations(Tree *first, Tree *second)
@@ -125,12 +139,8 @@ void GetRelations(Tree *first, Tree *second)
 		Tree *parent = GetParent(first, second);
 		if (parent != 0)
 		{
-			cout << "Parent of " << first->name << " and " << second->name 
+			cout << "Closest parent of " << first->name << " and " << second->name 
 				<< " is " << parent->name << endl;
-		}
-		else
-		{
-			cout << first->name << " and " << second->name 	<< " are not close relatives." << endl;
 		}
 	}
 }
@@ -154,44 +164,29 @@ bool IsParent(Tree *parent, Tree *child)
 
 Tree *GetParent(Tree *first, Tree *second)
 {
-	Tree *tmp1 = first;
-	Tree *tmp2 = second;
-	if (tmp1->urov != tmp2->urov)
+	Tree *firstTree = first;
+	Tree *secondTree = second;
+	if (firstTree->urov != secondTree->urov)
 	{
-		while (tmp1->urov > tmp2->urov)
+		while (firstTree->urov > secondTree->urov)
 		{
-			tmp1 = tmp1->fath;
+			firstTree = firstTree->fath;
 		}
-		while (tmp2->urov > tmp1->urov)
+		while (secondTree->urov > firstTree->urov)
 		{
-			tmp2 = tmp2->fath;
+			secondTree = secondTree->fath;
 		}
 	}
-	while ((tmp1 != tmp2) && (tmp1 != 0))
+	while ((firstTree != secondTree) && (firstTree != 0))
 	{
-		tmp1 = tmp1->fath;
-		tmp2 = tmp2->fath;
+		firstTree = firstTree->fath;
+		secondTree = secondTree->fath;
 	}
-	if (tmp1 == tmp2)
+	if (firstTree == secondTree)
 	{
-		return tmp1;
+		return firstTree;
 	}
 	else return 0;
-}
-
-void PrintTree(Tree *p)
-{
-	int i, j;
-	char st[DL];
-	if (p)
-	{
-		for (i = 0; i < p->urov; i++) st[i] = '.';
-		j = 0;
-		while (st[i++] = (p->name)[j++]);
-		printf("%s\n", st);
-		PrintTree(p->left);
-		PrintTree(p->right);
-	}
 }
 
 Tree *GetChilds(Tree *tree, char* name)
