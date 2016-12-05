@@ -23,6 +23,7 @@ Ann
 
 #include "stdafx.h"   
 #include "utils.h"
+using namespace std;
 
 int main(int argc, char* argv[])
 {
@@ -40,5 +41,10 @@ int main(int argc, char* argv[])
 	}
 	ReadFile(Fin, &root);
 	PrintTree(root);
-	FindRelations(root);
+
+	cout << "Enter two different names" << endl;
+	while (!cin.eof() && !cin.fail())
+	{
+		FindRelations(root);
+	}
 }

@@ -27,7 +27,8 @@ bool OpenFile(FILE *Fin, char* fileName)
 int ReadFile(FILE *F, Tree **r)
 {
 	char buf[DL];
-	int i, k, m, len;
+	size_t len;
+	int i, k, m;
 	Tree *p, *q, *t;       // *root = 0 
 	m = 0;                 // уровень вершины
 	t = 0;
@@ -99,11 +100,11 @@ char *ToChar(string string)
 	return newChar;
 }
 
-void FindRelations(Tree *tree)
+bool FindRelations(Tree *tree)
 {
+	cout << endl;
 	Tree *first = 0;
 	Tree *second = 0;
-	cout << "Enter two different names" << endl;
 	string firstName, secondName;
 	cin >> firstName;
 	cin >> secondName;
@@ -111,20 +112,23 @@ void FindRelations(Tree *tree)
 	first = GetChilds(tree, ToChar(firstName));
 	second = GetChilds(tree, ToChar(secondName));
 
-	GetRelations(first, second);
+	if (GetRelations(first, second, tree))
+		return true;
+	return false;
 }
 
-void GetRelations(Tree *first, Tree *second)
+bool GetRelations(Tree *first, Tree *second, Tree *tree)
 {
+	if ((first == 0) || (second == 0))
+	{
+		cout << "One or more name is not in the list." << endl;
+		return false;
+	}
+
 	if (first == second)
 	{
 		cout << "Please enter different names." << endl;
 	}
-	if ((first == 0) || (second == 0))
-	{
-		cout << "One or more name is not in the list." << endl;
-	}
-	
 
 	if (IsParent(first, second))
 	{
@@ -143,6 +147,7 @@ void GetRelations(Tree *first, Tree *second)
 				<< " is " << parent->name << endl;
 		}
 	}
+	return true;
 }
 
 bool IsParent(Tree *parent, Tree *child)
