@@ -2,8 +2,7 @@
 //
 #include "stdafx.h"
 using namespace std;
-
-typedef vector<vector<int>> Graph;
+typedef vector<vector<int>> AdjacencyMatrix;
 
 
 bool CheckInput(int argc)
@@ -16,32 +15,6 @@ bool CheckInput(int argc)
 	return true;
 }
 
-void ReadGraphFrom(istream& inputStream, Graph& graph)
-{
-	string buffer;
-	while (getline(inputStream, buffer))
-	{
-		stringstream ss(buffer);
-		int sourceIndex;
-		int destinationIndex;
-		int weight;
-		ss >> sourceIndex >> destinationIndex >> weight;
-
-		size_t maxIndex = max(sourceIndex, destinationIndex);
-		--sourceIndex;
-		--destinationIndex;
-		if (graph.size() < maxIndex)
-		{
-			graph.resize(maxIndex);
-			for (auto& line : graph)
-			{
-				line.resize(maxIndex, 0);
-			}
-		}
-		graph[sourceIndex][destinationIndex] = graph[destinationIndex][sourceIndex] = weight;
-	}
-}
-
 bool CheckArguments(ifstream & firstFile)
 {
 	if (!firstFile.is_open())
@@ -52,16 +25,57 @@ bool CheckArguments(ifstream & firstFile)
 	return true;
 }
 
-void PrintGraph(Graph& graph)
+void Resizematrix(AdjacencyMatrix& matrix, size_t maxValue)
 {
-	for (size_t i = 0; i < graph.size(); ++i)
+	matrix.resize(maxValue);
+	for (auto& row : matrix)
 	{
-		for (size_t j = 0; j < graph[i].size(); ++j)
+		row.resize(maxValue, 0);
+	}
+}
+
+void BuildMatrix(istream& inputStream, AdjacencyMatrix& matrix)
+{
+	string buffer;
+	while (getline(inputStream, buffer))
+	{
+		stringstream ss(buffer);
+		int firstValue, secondValue, weight;
+		ss >> firstValue >> secondValue >> weight;
+
+		size_t maxValue = max(firstValue, secondValue);
+		--firstValue;
+		--secondValue;
+		if (matrix.size() < maxValue)
 		{
-			cout << graph[i][j] << " ";
+			Resizematrix(matrix, maxValue);
+		}
+		matrix[firstValue][secondValue] = matrix[secondValue][firstValue] = weight;
+	}
+}
+
+void Printmatrix(AdjacencyMatrix& matrix)
+{
+	for (size_t i = 0; i < matrix.size(); ++i)
+	{
+		cout.width(5);
+		for (size_t j = 0; j < matrix[i].size(); ++j)
+		{
+			cout.width(5);
+			cout << matrix[i][j] << " ";
 		}
 		cout << endl;
 	}
+}
+
+bool IsThereDirectWay(AdjacencyMatrix matrix, int firstPoint, int targetPoint)
+{
+	return matrix[firstPoint][targetPoint] != 0;
+}
+
+void FindMaxWeight(AdjacencyMatrix matrix, int firstPoint, int targetPoint)
+{
+	cout << IsThereDirectWay(matrix, firstPoint, targetPoint);
 }
 
 int main(int argc, char * argv[]) 
@@ -76,52 +90,63 @@ int main(int argc, char * argv[])
 	{
 		return 1;
 	}
-	Graph graph;
-	ReadGraphFrom(input, graph);
-	size_t temp;
-	size_t minindex, min;
-	size_t maxIndex = graph.size();
-	cout << maxIndex << endl;
-	PrintGraph(graph);
 
+	AdjacencyMatrix matrix;
+	BuildMatrix(input, matrix);
+	//size_t temp;
+	//size_t minindex, min;
+	//size_t maxIndex = matrix.size();
+	Printmatrix(matrix);
+
+	int firstPoint, targetPoint;
+	cout << endl << "Enter start point and target point: ";
+	cin >> firstPoint >> targetPoint;
+
+	FindMaxWeight(matrix, firstPoint, targetPoint);
+/*
 	vector<size_t> distance;
-	cout << "1" << endl;
 	vector<bool> checked;
-	cout << "2" << endl;
 	//Инициализация
 	for (size_t i = 0; i < maxIndex; i++) 
 	{
-		cout << "3" << endl;
 		distance.push_back(10000);
-		cout << "4" << endl;
 		checked.push_back(false);
 	}
-	cout << distance[0] << endl;
 	distance[0] = 0;
 	// Шаг алгоритма
-	do {
+	do 
+	{
 		minindex = 10000;
 		min = 10000;
-		for (size_t i = 0; i < maxIndex; i++) {
-			if ((checked[i] == false) && (distance[i]<min)) {
+		for (size_t i = 0; i < maxIndex; i++) 
+		{
+			if ((checked[i] == false) && (distance[i]<min)) 
+			{
 				min = distance[i];
 				minindex = i;
 			}
 		}
-		if (minindex != 10000) {
-			for (size_t i = 0; i < maxIndex; i++) {
-				if (graph[minindex][i] > 0) {
-					temp = min + graph[minindex][i];
+		
+		if (minindex != 10000) 
+		{
+			for (size_t i = 1; i < maxIndex; i++) 
+			{
+				if (matrix[minindex][i] > 0) 
+				{
+					temp = min + matrix[minindex][i];
 					if (temp < distance[i])
+					{
 						distance[i] = temp;
+					}
 				}
 			}
 			checked[minindex] = true;
 		}
-	} while (minindex < 10000);
+	} 
+	while (minindex < 10000);
 	// Вывод матрицы связей
 	for (size_t i = 0; i < maxIndex; i++)
 		printf("%5d \n", distance[i]);
 	getchar(); getchar();
-	
+	*/
 }
