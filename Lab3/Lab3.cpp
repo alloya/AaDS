@@ -44,12 +44,13 @@ void BuildMatrix(istream& inputStream, AdjacencyMatrix& matrix)
 		ss >> firstValue >> secondValue >> weight;
 
 		size_t maxValue = max(firstValue, secondValue);
-		--firstValue;
-		--secondValue;
 		if (matrix.size() < maxValue)
 		{
 			Resizematrix(matrix, maxValue);
 		}
+
+		--firstValue;
+		--secondValue;
 		matrix[firstValue][secondValue] = matrix[secondValue][firstValue] = weight;
 	}
 }
@@ -68,18 +69,18 @@ void Printmatrix(AdjacencyMatrix& matrix)
 	}
 }
 
-bool IsThereDirectWay(AdjacencyMatrix matrix, int firstPoint, int targetPoint)
+void PrintFinalTable(size_t maxIndex, vector<size_t> distance)
 {
-	return matrix[firstPoint][targetPoint] != 0;
-}
-
-void FindMaxWeight(AdjacencyMatrix matrix, int firstPoint, int targetPoint)
-{
-	cout << IsThereDirectWay(matrix, firstPoint, targetPoint);
+	for (size_t i = 0; i < maxIndex; i++)
+	{
+		cout << "Расстояние до вершины " << i+1 << " = " << distance[i] << endl;
+	}
+	cout << endl;
 }
 
 int main(int argc, char * argv[]) 
 {
+	setlocale(LC_ALL, "Rus");
 	if (!CheckInput(argc))
 	{
 		return 1;
@@ -93,60 +94,66 @@ int main(int argc, char * argv[])
 
 	AdjacencyMatrix matrix;
 	BuildMatrix(input, matrix);
-	//size_t temp;
-	//size_t minindex, min;
-	//size_t maxIndex = matrix.size();
+	size_t temp;
+	size_t minIndex, max;
+	size_t maxIndex = matrix.size();
+	cout << "Полученная матрица смежности" << endl;
 	Printmatrix(matrix);
 
-	int firstPoint, targetPoint;
-	cout << endl << "Enter start point and target point: ";
-	cin >> firstPoint >> targetPoint;
-
-	FindMaxWeight(matrix, firstPoint, targetPoint);
-/*
+	//Для каждой вершины задаем статус посещённости false и дистанцию до нее стремящейся к бесконечности 
 	vector<size_t> distance;
 	vector<bool> checked;
-	//Инициализация
+	
 	for (size_t i = 0; i < maxIndex; i++) 
 	{
-		distance.push_back(10000);
+		distance.push_back(INT_MAX);
 		checked.push_back(false);
 	}
 	distance[0] = 0;
 	// Шаг алгоритма
 	do 
 	{
-		minindex = 10000;
-		min = 10000;
-		for (size_t i = 0; i < maxIndex; i++) 
+		PrintFinalTable(maxIndex, distance);
+		minIndex = INT_MAX;
+		max = INT_MAX;
+		for (size_t i = 0; i < maxIndex; i++)
 		{
-			if ((checked[i] == false) && (distance[i]<min)) 
+			if (!checked[i] && (distance[i] < max))
 			{
-				min = distance[i];
-				minindex = i;
+				max = distance[i];
+				minIndex = i;
+				
 			}
+			
 		}
-		
-		if (minindex != 10000) 
+		//getchar();
+		cout << "Начинаем обход вершин, соединенных с вершиной [" << minIndex + 1 << "]" << endl;
+		if (minIndex != INT_MAX)
 		{
-			for (size_t i = 1; i < maxIndex; i++) 
+			for (size_t i = 0; i < maxIndex; i++) 
 			{
-				if (matrix[minindex][i] > 0) 
+				if (matrix[minIndex][i] > 0)
 				{
-					temp = min + matrix[minindex][i];
+					temp = max + matrix[minIndex][i];
 					if (temp < distance[i])
 					{
 						distance[i] = temp;
+						cout << "Путь до вершины [" << i + 1 << "] становится равным " << temp << " = " << max << " + " << matrix[minIndex][i] << endl;
+					}
+					else
+					{
+						cout << "Путь до вершины [" << i + 1 << "] не изменяется, т.к. " << distance[i] << " < " << max << " + " << matrix[minIndex][i] << endl;
 					}
 				}
 			}
-			checked[minindex] = true;
+			checked[minIndex] = true;
+			cout << "Вершина [" << minIndex + 1 << "] посещена." << endl << endl;
 		}
+		
 	} 
-	while (minindex < 10000);
-	// Вывод матрицы связей
-	for (size_t i = 0; i < maxIndex; i++)
-		printf("%5d \n", distance[i]);
-	getchar(); getchar();
-	*/
+	
+	while (minIndex < INT_MAX);
+	
+	getchar(); 
+	
 }
