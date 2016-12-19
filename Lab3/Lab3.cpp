@@ -110,7 +110,6 @@ int main(int argc, char * argv[])
 		checked.push_back(false);
 	}
 	distance[0] = 0;
-	// Шаг алгоритма
 	do 
 	{
 		PrintFinalTable(maxIndex, distance);
@@ -126,7 +125,8 @@ int main(int argc, char * argv[])
 			}
 			
 		}
-		//getchar();
+		getchar();
+		if (minIndex != INT_MAX)
 		cout << "Начинаем обход вершин, соединенных с вершиной [" << minIndex + 1 << "]" << endl;
 		if (minIndex != INT_MAX)
 		{
@@ -149,11 +149,6 @@ int main(int argc, char * argv[])
 			checked[minIndex] = true;
 			cout << "Вершина [" << minIndex + 1 << "] посещена." << endl << endl;
 		}
-		
-	} 
-	
+	}
 	while (minIndex < INT_MAX);
-	
-	getchar(); 
-	
 }
