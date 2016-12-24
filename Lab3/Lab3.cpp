@@ -73,7 +73,15 @@ void PrintFinalTable(size_t maxIndex, vector<size_t> distance)
 {
 	for (size_t i = 0; i < maxIndex; i++)
 	{
-		cout << "Расстояние до вершины " << i+1 << " = " << distance[i] << endl;
+		cout << "Расстояние до вершины " << i + 1 << " = ";
+		if (distance[i] != INT_MAX)
+		{
+			cout << distance[i] << endl;
+		}
+		else
+		{
+			cout << "Infinity" << endl;
+		}
 	}
 	cout << endl;
 }
@@ -121,16 +129,13 @@ int main(int argc, char * argv[])
 			{
 				max = distance[i];
 				minIndex = i;
-				
 			}
-			
 		}
 		getchar();
 		if (minIndex != INT_MAX)
-		cout << "Начинаем обход вершин, соединенных с вершиной [" << minIndex + 1 << "]" << endl;
-		if (minIndex != INT_MAX)
 		{
-			for (size_t i = 0; i < maxIndex; i++) 
+			cout << "Начинаем обход вершин, соединенных с вершиной [" << minIndex + 1 << "]" << endl;
+			for (size_t i = 0; i < maxIndex; i++)
 			{
 				if (matrix[minIndex][i] > 0)
 				{
@@ -151,4 +156,5 @@ int main(int argc, char * argv[])
 		}
 	}
 	while (minIndex < INT_MAX);
+	return 0;
 }
