@@ -86,6 +86,17 @@ void PrintFinalTable(size_t maxIndex, vector<size_t> distance)
 	cout << endl;
 }
 
+void CheckResidualVertex(vector<bool>& checked)
+{
+	for (vector<bool>::iterator it = checked.begin(); it != checked.end(); ++it)
+	{
+		if (!*it)
+		{
+			cout << "Вершина [" << distance(checked.begin(), it) + 1 << "] не всязана с основным графом" << endl;
+		}
+	}
+}
+
 int main(int argc, char * argv[]) 
 {
 	setlocale(LC_ALL, "Rus");
@@ -131,7 +142,7 @@ int main(int argc, char * argv[])
 				minIndex = i;
 			}
 		}
-		getchar();
+		//getchar();
 		if (minIndex != INT_MAX)
 		{
 			cout << "Начинаем обход вершин, соединенных с вершиной [" << minIndex + 1 << "]" << endl;
@@ -156,5 +167,6 @@ int main(int argc, char * argv[])
 		}
 	}
 	while (minIndex < INT_MAX);
+	CheckResidualVertex(checked);
 	return 0;
 }
