@@ -243,7 +243,7 @@ int main(int argc, char * argv[])
 				minIndex = i;
 			}
 		}
-		getchar();
+		//getchar();
 		if (minIndex != INT_MAX)
 		{
 			cout << "Начинаем обход вершин, соединенных с вершиной [" << minIndex + 1 << "]" << endl;
