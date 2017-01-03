@@ -60,7 +60,6 @@ void PrintMatrix(AdjacencyMatrix& matrix)
 	for (size_t i = 0; i < matrix.size(); ++i)
 	{
 		cout.width(5);
-		cout << i + 1 << " Vertex: ";
 		for (size_t j = 0; j < matrix[i].size(); ++j)
 		{
 			cout.width(5);
