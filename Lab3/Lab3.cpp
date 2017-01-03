@@ -25,71 +25,6 @@ bool CheckArguments(ifstream & firstFile)
 	return true;
 }
 
-vector<size_t> FindAdjustedVertex(AdjacencyMatrix matrix, size_t index)
-{
-	vector<size_t> adjustedVertex;
-	for (size_t i = 1; i < matrix.size(); ++i)
-	{
-		if (matrix[index][i] != 0)
-		{
-			adjustedVertex.push_back(i);
-		}
-	}
-	return adjustedVertex;
-}
-
-
-size_t RowSum(vector<int> row)
-{
-	size_t sum = 0;
-	for (size_t i = 0; i < row.size(); ++i)
-	{
-		sum += row[i];
-	}
-	return sum;
-}
-
-
-void FillMinWay(AdjacencyMatrix& way, size_t srcIndex, size_t destIndex)
-{
-	/*for each (int elem in way[srcIndex])
-	{
-		way[destIndex][elem] = way[srcIndex][elem];
-	}*/
-	for (size_t i = 0; i < way.size(); ++i)
-	{
-		way[destIndex][i] = way[srcIndex][i];
-	}
-}
-
-void FindMinWay(const AdjacencyMatrix& matrix, AdjacencyMatrix& way, size_t index)
-{
-	//vector<size_t> vertexes = FindAdjustedVertex(matrix, index);
-	//assert(vertexes.size() != 0);
-	//size_t minWay = RowSum(way[vertexes[0]]);
-	//size_t minWayvertex = vertexes[0];
-	//for each (size_t elem in way[index])
-	//{
-	//	if (RowSum(way[vertexes[elem]]) < minWay)
-	//	{
-	//		minWay = RowSum(way[vertexes[elem]]);
-	//		minWayvertex = elem;
-	//	}
-	//}
-	//FillMinWay(way, minWayvertex, index);
-}
-
-void ClearRow(AdjacencyMatrix& row, size_t rowNumder)
-{
-	for (size_t i = 0; i < row.size(); ++i)
-	{
-		if (row[rowNumder][i] != 0)
-		{
-			row[rowNumder][i] = 0;
-		}
-	}
-}
-
 void ResizeMatrix(AdjacencyMatrix& matrix, size_t maxValue)
 {
 	matrix.resize(maxValue);
@@ -112,7 +47,6 @@ void BuildMatrix(istream& inputStream, AdjacencyMatrix& matrix, AdjacencyMatrix&
 		if (matrix.size() < maxValue)
 		{
 			ResizeMatrix(matrix, maxValue);
-			//ResizeMatrix(way, maxValue);
 		}
 
 		--firstValue;
@@ -164,43 +98,37 @@ void CheckResidualVertex(vector<bool>& checked)
 	}
 }
 
-void PrintPath(const AdjacencyMatrix& way, size_t vertex)
+void PrintPath(const AdjacencyMatrix& way, size_t vertex, vector<bool> checked)
 {
 	if (vertex <= way.size())
 	{
-		if (vertex != 1)
+		if (checked[vertex - 1])
 		{
-			cout << "Путь до вершины " << vertex << ":  Начало ";
-			vertex -= 1;
-			for (size_t i = 0; i < way[vertex].size(); i++)
+			if (vertex != 1)
 			{
+				cout << "Путь до вершины " << vertex << ":  Начало ";
+				vertex -= 1;
+				for (size_t i = 0; i < way[vertex].size(); i++)
 				{
-					//if (way[vertex - 1][i] != 0)
-					//{
-					cout << "-> " << way[vertex][i];// << "(" << way[vertex - 1][i] << ")";
-					//}
+					cout << "-> " << way[vertex][i];
 				}
+				cout << endl << endl;
 			}
-			cout << endl << endl;
+			else
+			{
+				cout << "Вы на месте." << endl << endl;
+			}
 		}
 		else
 		{
-			cout << "Вы на месте." << endl << endl;
+			cout << "Вершина [" << vertex << "] не связана с основным графом" << endl << endl;
 		}
 	}
 	else
 	{
-		cout << "Такой вершины нет в графе." << endl;
+		cout << "Такой вершины нет в графе." << endl << endl;
 	}
 	
-}
-
-void InitWayVector(AdjacencyMatrix& way)
-{
-	for (size_t i = 0; i < way.size(); ++i)
-	{
-		way[i].push_back(0);
-	}
 }
 
 void FillNewPath(AdjacencyMatrix& way, size_t destRow, size_t srcRow)
@@ -208,11 +136,9 @@ void FillNewPath(AdjacencyMatrix& way, size_t destRow, size_t srcRow)
 	way[destRow].clear();
 	for (size_t i = 0; i < way[srcRow].size(); ++i)
 	{
-		//way[destRow][i].push_back(way[srcRow][i]);
 		way[destRow].resize(way[srcRow].size());
 		way[destRow][i] = way[srcRow][i];
 	}
-	//way[i].push_back(way[minIndex]);
 }
 
 int main(int argc, char * argv[])
@@ -236,12 +162,8 @@ int main(int argc, char * argv[])
 	size_t minIndex, max;
 	size_t maxIndex = matrix.size();
 	way.resize(maxIndex);
-	//InitWayVector(way);
-	//const int& maximum = maxIndex;
 	cout << "Полученная матрица смежности" << endl;
 	PrintMatrix(matrix);
-	//cout << "------------------------" << endl;
-	//Printmatrix(way);
 
 	//Для каждой вершины задаем статус посещённости false и дистанцию до нее стремящейся к бесконечности 
 	vector<size_t> distance;
@@ -279,33 +201,12 @@ int main(int argc, char * argv[])
 					{
 						distance[i] = temp;
 						cout << "Путь до вершины [" << i + 1 << "] становится равным " << temp << " = " << max << " + " << matrix[minIndex][i] << endl;
-						//way[i][i] = matrix[minIndex][i];
-						//cout << "way[" << i << "][" << i << "] = " << way[i][i] << endl;
 						if (max != 0)
 						{
-							//way[i].clear();
-							//way[i].push_back(way[minIndex]);
 							FillNewPath(way, i, minIndex);
 						}
 						way[i].push_back(i+1);
-						
-					/*	if (RowSum(way[i]) < temp)
-						{
-							ClearRow(way, i);
-							if (matrix[0][minIndex] == 0)
-							{
-								FillMinWay(way, minIndex, minIndex + 1);
-							}
-							else
-							{
-								way[i][minIndex] = matrix[0][minIndex];
-							}
-							way[i][i] = matrix[minIndex][i];
-							//way[i][minIndex] = FindMinWay(matrix, minIndex);
-							
-							//cout << "way[" << i << "][" << minIndex << "] = " << way[i][minIndex] << endl;
-						}
-					*/	PrintMatrix(way);
+						//PrintMatrix(way);
 					}
 
 					else
@@ -325,7 +226,7 @@ int main(int argc, char * argv[])
 	{
 		cout << "Введите вершину путь до которой нужно отобразить: ";
 		cin >> vertexToLookFor;
-		PrintPath(way, vertexToLookFor);
+		PrintPath(way, vertexToLookFor, checked);
 	}
 	return 0;
 }
